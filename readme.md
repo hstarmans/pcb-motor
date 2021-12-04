@@ -4,7 +4,7 @@ Packages to generate a PCB motor, Carl Bugeja style, for KiCad using Python
 
 ## History
 
-Carl Bugeja shared several project where eletric motors are made directly using PCBs,
+Carl Bugeja shared several projects where eletric motors are made directly using PCBs,
 see [Hackaday](https://hackaday.io/CarlBugeja), [Youtube](https://www.youtube.com/c/CarlBugeja)
 Drawing these circuits can be a pain. The idea is that this scripts draws them directly and gives an
 estimate for the coil resistance, magnetic field strength and heating.

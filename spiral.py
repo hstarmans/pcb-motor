@@ -14,6 +14,13 @@ def segment(start, end, width, layer, net):
     return text
 
 
+def graphic_circle(center, radius, layer, width=0.05):
+    ''' draws graphic circle as position with radius at layer with width
+    '''
+    text = f"(gr_circle (center {center[0]} {center[1]}) (end {center[0]} {center[1]+radius})"
+    text += f"(layer {layer}) (width {width}))"
+    return text
+
 def arc(center, radius, startangle, finalangle, track_dct, segs=20):
     '''draws circular arc with center radius, start- and finalangle
 
@@ -26,9 +33,10 @@ def arc(center, radius, startangle, finalangle, track_dct, segs=20):
     segangle = np.radians((finalangle-startangle) / segs)
     str_data = ""
     for i in range(int(segs)):
-        start = center + [np.sin(segangle*i), np.cos(segangle*i)]*radius
-        end = start + [np.sin(segangle), np.cos(segangle)]*radius
-        str_data += segment(start.to_list(), end.to_list(), track_dct)
+        start = center + np.array([np.sin(segangle*i), np.cos(segangle*i)])*radius
+        end = center + np.array([np.sin(segangle*(i+1)), np.cos(segangle*(i+1))])*radius
+        str_data += segment(start.tolist(), end.tolist(), **track_dct)
+    return str_data
 
 
 def archimidean_spiral(center, start_radius, track_distance,
@@ -157,6 +165,48 @@ def four_layer_coil(center, top_angle, connect_angle, bottom_angle,
     return res
 
 
+def pcb_motor(position, axis_radius, spiral_dct, track_dct, coil_dct):
+    '''draws Carl Bugeja styled PCB motor at position
+    
+    position: position of PCB motor
+    axis_radius: radius of central axis of PCB motor
+    spiral_dct: settings for spiral in coils, dct
+    coil_dct: settings for coil, dct
+    track_dct: settings for tracks, dct
+    '''
+     # included angle
+    poles = 6                        # poles of motor
+    
+    angle_included = 2*np.pi/poles
+    outer_radius = archimedian_spiral_outer_radius(spiral_dct['turns'],
+                                                   track_dct['width'],
+                                                   spiral_dct['track_distance'],
+                                                   spiral_dct['start_radius'])   
+    # safety margin
+    outer_radius += spiral_dct['track_distance']/2
+    # https://math.stackexchange.com/questions/134606/distance-between-any-two-points-on-a-unit-circle
+    radius_motor = (2*outer_radius)/(2*np.sin(angle_included/2))
+
+    str_data = ""
+    for pole in range(poles):
+        angle = angle_included*pole +angle_included/2
+        coil_center = position + np.array([np.cos(angle), np.sin(angle)])*radius_motor
+        # top poles of motor should connect to phases
+        if pole >= 3:
+            coil_dct['top_angle'] = 0
+        else:
+            coil_dct['top_angle'] = (np.degrees(angle_included)*(1-pole)+360)%360
+        coil_dct['center'] = coil_center
+        coil_dct['connect_angle'] = (45+np.degrees(angle_included)*pole + 360)%360
+        coil_dct['bottom_angle'] = (np.degrees(angle_included)*(2+pole)+360)%360
+        str_data += four_layer_coil(**coil_dct, spiral_dct=spiral_dct, track_dct=track_dct)
+
+    # center hole for slide bearing
+    track_dct['layer']='Edge.Cuts'
+    str_data += graphic_circle(position, axis_radius, 'Edge.Cuts')
+    return str_data
+
+
 if __name__ == '__main__':
 
     track_dct = { "layer": "F.Cu",
@@ -179,7 +229,9 @@ if __name__ == '__main__':
         "bottom_angle": 360,  # degrees
         "layer_stack": ['F.Cu', 'In1.Cu', 'In2.Cu', 'B.Cu']
     }
-       
+    position = np.array([115.0, 105.0])  # center of motor
+
+
     # open base file
     start = None
     end = None
@@ -189,36 +241,12 @@ if __name__ == '__main__':
         end = lines[99:]
    
     
-    # included angle
-    poles = 6                        # poles of motor
-    cntr = np.array([115.0, 105.0])  # center of motor
-    angle_included = 2*np.pi/poles
-    outer_radius = archimedian_spiral_outer_radius(spiral_dct['turns'],
-                                                   track_dct['width'],
-                                                   spiral_dct['track_distance'],
-                                                   spiral_dct['start_radius'])   
-    # safety margin
-    outer_radius += spiral_dct['track_distance']/2
-    # https://math.stackexchange.com/questions/134606/distance-between-any-two-points-on-a-unit-circle
-    radius_motor = (2*outer_radius)/(2*np.sin(angle_included/2))
-
     with open('spiral.kicad_pcb', 'w') as f:
         for line in start:
             f.write(line)
-
-        top_angles = [60, 360, 300]
-        for pole in range(poles):
-            angle = angle_included*pole +angle_included/2
-            coil_center = cntr + np.array([np.cos(angle), np.sin(angle)])*radius_motor
-            # top poles of motor should connect to phases
-            if pole >= 3:
-                coil_dct['top_angle'] = 0
-            else:
-                coil_dct['top_angle'] = (np.degrees(angle_included)*(1-pole)+360)%360
-            coil_dct['center'] = coil_center
-            coil_dct['connect_angle'] = (45+np.degrees(angle_included)*pole + 360)%360
-            coil_dct['bottom_angle'] = (np.degrees(angle_included)*(2+pole)+360)%360
-            f.write(four_layer_coil(**coil_dct, spiral_dct=spiral_dct, track_dct=track_dct))
+        
+        str_data = pcb_motor(position, 3, spiral_dct, track_dct, coil_dct)
+        f.write(str_data)
 
         for line in end:
             f.write(line)
