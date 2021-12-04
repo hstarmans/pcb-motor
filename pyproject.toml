@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "pcb motors"
+version = "0.1.0"
+description = "Carl Bugeja's pcb motor ideas packaged in Python"
+authors = ["Rik Starmans <hstarmans@hexastorm>"]
+license = "GPL v3"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+numpy = "^1.21.4"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
