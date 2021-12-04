@@ -6,9 +6,9 @@ Packages to generate a PCB motor, Carl Bugeja style, for KiCad using Python
 
 Carl Bugeja shared several project where eletric motors are made directly using PCBs,
 see [Hackaday](https://hackaday.io/CarlBugeja), [Youtube](https://www.youtube.com/c/CarlBugeja)
-Drawing these circuits can be a pain. The idea is that packages draws them directly and gives an
+Drawing these circuits can be a pain. The idea is that this scripts draws them directly and gives an
 estimate for the coil resistance, magnetic field strength and heating.
-I am mainly interested in PCB motors to spin prism.
+Note, I am mainly interested in PCB motors to spin prisms.
 
 ## Install
 Install poetry and python

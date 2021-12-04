@@ -6,7 +6,7 @@ authors = ["Rik Starmans <hstarmans@hexastorm>"]
 license = "GPL v3"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = ">=3.7,<3.10"
 numpy = "^1.21.4"
 
 [tool.poetry.dev-dependencies]
