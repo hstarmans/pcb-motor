@@ -47,6 +47,8 @@ def archimidean_spiral(center, start_radius, track_distance,
         segs: number of straight semgents used to draw arc
     '''
     str_data = ""
+    # track distance should account for track width
+    track_distance += track_dct['width']
     for j in range(turns):
         # each turn consists of more segments
         # and a smaller angle angle per segment
@@ -58,23 +60,22 @@ def archimidean_spiral(center, start_radius, track_distance,
             segments = int(final_angle/360*segments)
 
         def spiral_formula(i):
-            angle = segangle*rotation*i + start_angle
-            return ((start_radius + segradius * i + track_distance * (j+1))
-                    *[np.sin(angle), np.cos(angle)])
+            angle = np.radians(segangle*rotation*i + start_angle)
+            return ((start_radius + segradius * i + track_distance*(j+1))
+                    *np.array([np.sin(angle), np.cos(angle)]))
 
         for i in range(segments):
             # central rings for HV and SNS
             start = center + spiral_formula(i)
             end = center + spiral_formula(i+1)
-            str_data += segment(start.to_list(), end.to_list(), track_dct)
+            str_data += segment(start.tolist(), end.tolist(), **track_dct)
 
     return str_data
 
 def drill_via(position, size=0.45, drill=0.3, net=0):
     '''drill via of size with dril in net
     '''
-    posx, posy = position
-    text = f"(via (at {posx:6f} {posy:6f}) (size {size})"
+    text = f"(via (at {position[0]:6f} {position[1]:6f}) (size {size})"
     text += f" (drill {drill}) (layers F.Cu B.Cu) (net {net}))\n" 
     return text
 
@@ -119,39 +120,40 @@ def four_layer_coil(center, top_angle, connect_angle, bottom_angle,
     res += drill_via(pos_hole)
     # vias from outer ring
     radius = archimedian_spiral_outer_radius(spiral_dct['turns'],
-                                             spiral_dct['start_radius'],
-                                             track_dct['track_distance'],
-                                             track_dct['track_width'])
+                                             track_dct['width'],
+                                             spiral_dct['track_distance'],
+                                             spiral_dct['start_radius'])                                             
+    # some additional offset to not touch tracks
     radius += 0.3
     
     angle = np.radians(90-connect_angle)
-    pos_hole = center + radius * [np.cos(angle), np.sin(angle)]
+    pos_hole = center + radius * np.array([np.cos(angle), -np.sin(angle)])
     res += drill_via(pos_hole)
-
+    spiral_dct['center'] = center
     # layer 0
     spiral_dct['start_angle'] = 180
     spiral_dct['rotation'] = 1
     spiral_dct['final_angle'] = top_angle
     track_dct['layer'] = layer_stack[0]
-    res += archimidean_spiral(**spiral_dct, track_dct)
+    res += archimidean_spiral(**spiral_dct, track_dct=track_dct)
     # layer 1
     spiral_dct['start_angle'] = 180
     spiral_dct['rotation'] = -1
     spiral_dct['final_angle'] = connect_angle
     track_dct['layer'] = layer_stack[1]
-    res += archimidean_spiral(**spiral_dct, track_dct)
+    res += archimidean_spiral(**spiral_dct, track_dct=track_dct)
     # layer 2
     spiral_dct['start_angle'] = 0
     spiral_dct['rotation'] = 1
     spiral_dct['final_angle'] = (180-connect_angle+360)%360
     track_dct['layer'] = layer_stack[2]
-    res += archimidean_spiral(**spiral_dct, track_dct)
+    res += archimidean_spiral(**spiral_dct, track_dct=track_dct)
     # layer 3
     spiral_dct['start_angle'] = 0
     spiral_dct['rotation'] = -1
     spiral_dct['final_angle'] = bottom_angle
     track_dct['layer'] = layer_stack[3]
-    res += archimidean_spiral(**spiral_dct, track_dct)
+    res += archimidean_spiral(**spiral_dct, track_dct=track_dct)
     return res
 
 
@@ -163,10 +165,10 @@ if __name__ == '__main__':
 
     spiral_dct = {
         "center": np.array([115.0, 105.0]),
-        "radius": 0.5,  # start radius in mm
-        "track_distance": 0.15,  # distance between tracks
-        "startangle": 0,
-        "finalangle": 360, 
+        "start_radius": 0.5,     # mm
+        "track_distance": 0.15,  # mm
+        "start_angle": 0,         # degrees
+        "final_angle": 360,       # degrees
         "turns": 11,
         "rotation": -1}
     
@@ -188,15 +190,15 @@ if __name__ == '__main__':
    
     
     # included angle
-    poles = 6              # poles of motor
+    poles = 6                        # poles of motor
     cntr = np.array([115.0, 105.0])  # center of motor
     angle_included = 2*np.pi/poles
     outer_radius = archimedian_spiral_outer_radius(spiral_dct['turns'],
-                                                   spiral_dct['start_radius'],
-                                                   track_dct['track_distance'],
-                                                   track_dct['track_width'])
+                                                   track_dct['width'],
+                                                   spiral_dct['track_distance'],
+                                                   spiral_dct['start_radius'])   
     # safety margin
-    outer_radius += coil_dct['track_distance']/2
+    outer_radius += spiral_dct['track_distance']/2
     # https://math.stackexchange.com/questions/134606/distance-between-any-two-points-on-a-unit-circle
     radius_motor = (2*outer_radius)/(2*np.sin(angle_included/2))
 
@@ -216,7 +218,7 @@ if __name__ == '__main__':
             coil_dct['center'] = coil_center
             coil_dct['connect_angle'] = (45+np.degrees(angle_included)*pole + 360)%360
             coil_dct['bottom_angle'] = (np.degrees(angle_included)*(2+pole)+360)%360
-            f.write(four_layer_coil(**coil_dct, spiral_dct, track_dct))
+            f.write(four_layer_coil(**coil_dct, spiral_dct=spiral_dct, track_dct=track_dct))
 
         for line in end:
             f.write(line)
