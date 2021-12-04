@@ -1,7 +1,6 @@
 # PCB Motors
 
-Packages that allows you to generate a PCB motor for KiCad using Python
-
+Packages to generate a PCB motor, Carl Bugeja style, for KiCad using Python
 
 ## History
 
@@ -22,8 +21,10 @@ Use poetry to install the dependencies in pyproject.toml
 poetry install
 ```
 Change parameters in the script and run it
-'''console
+```console
 poetry run python spiral.py
-'''
+```
 The script modifies the base_kicad_pcb and creates a spiral.kicad_pcb.
 This can be opened with KiCad and should contain the motor.
+This design can be attached to another pcb via Kicad PCB import method.
+Note, this feature is only available if KiCad PCB is run in standalone mode.
