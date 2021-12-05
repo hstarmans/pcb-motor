@@ -28,3 +28,9 @@ The script modifies the base_kicad_pcb and creates a spiral.kicad_pcb.
 This can be opened with KiCad and should contain the motor.
 This design can be attached to another pcb via Kicad PCB import method.
 Note, this feature is only available if KiCad PCB is run in standalone mode.
+
+## Results
+
+Script creates a 4 layer PCB motor with 6 poles. 
+The front copper layer is seen below,  
+![](./images/toplayer.png)
