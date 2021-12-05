@@ -6,7 +6,7 @@ Packages to generate a PCB motor, Carl Bugeja style, for KiCad using Python
 
 Carl Bugeja shared several projects where eletric motors are made directly using PCBs,
 see [Hackaday](https://hackaday.io/CarlBugeja), [Youtube](https://www.youtube.com/c/CarlBugeja)
-Drawing these circuits can be a pain. The idea is that this scripts draws them directly and gives an
+Drawing these circuits can be a pain. This scripts automates the fabrication and gives an
 estimate for the coil resistance, magnetic field strength and heating.
 Note, I am mainly interested in PCB motors to spin prisms.
 
@@ -32,5 +32,5 @@ Note, this feature is only available if KiCad PCB is run in standalone mode.
 ## Results
 
 Script creates a 4 layer PCB motor with 6 poles. 
-The front copper layer is seen below,  
+The front copper layer is shown below,  
 ![](./images/toplayer.jpg)
