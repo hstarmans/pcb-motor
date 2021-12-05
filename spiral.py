@@ -32,9 +32,14 @@ def arc(center, radius, startangle, finalangle, track_dct, segs=20):
     '''
     segangle = np.radians((finalangle-startangle) / segs)
     str_data = ""
+
+    def circle_formula(i):
+        angle = segangle*i+np.radians(startangle)
+        return np.array([np.sin(angle), np.cos(angle)])*radius
+
     for i in range(int(segs)):
-        start = center + np.array([np.sin(segangle*i), np.cos(segangle*i)])*radius
-        end = center + np.array([np.sin(segangle*(i+1)), np.cos(segangle*(i+1))])*radius
+        start = center + circle_formula(i)
+        end = center + circle_formula(i+1)
         str_data += segment(start.tolist(), end.tolist(), **track_dct)
     return str_data
 
@@ -167,6 +172,11 @@ def four_layer_coil(center, top_angle, connect_angle, bottom_angle,
 
 def pcb_motor(position, axis_radius, spiral_dct, track_dct, coil_dct):
     '''draws Carl Bugeja styled PCB motor at position
+
+    pcbmotor has 6 coils and 4 layers
+    connection between poles is done via the center and using 
+    different layer stacks per coil
+    user still has to draw the final connections
     
     position: position of PCB motor
     axis_radius: radius of central axis of PCB motor
@@ -174,10 +184,9 @@ def pcb_motor(position, axis_radius, spiral_dct, track_dct, coil_dct):
     coil_dct: settings for coil, dct
     track_dct: settings for tracks, dct
     '''
-     # included angle
-    poles = 6                        # poles of motor
     
-    angle_included = 2*np.pi/poles
+    poles = 6                        # poles of motor
+    angle_included = 2*np.pi/poles   # included angle
     outer_radius = archimedian_spiral_outer_radius(spiral_dct['turns'],
                                                    track_dct['width'],
                                                    spiral_dct['track_distance'],
@@ -187,6 +196,14 @@ def pcb_motor(position, axis_radius, spiral_dct, track_dct, coil_dct):
     # https://math.stackexchange.com/questions/134606/distance-between-any-two-points-on-a-unit-circle
     radius_motor = (2*outer_radius)/(2*np.sin(angle_included/2))
 
+    # layer stack for each pole
+    stacks = [['F.Cu', 'B.Cu', 'In1.Cu', 'In2.Cu']]
+    stacks += [['F.Cu', 'In2.Cu', 'In1.Cu', 'B.Cu']]
+    stacks += [['F.Cu', 'In2.Cu', 'B.Cu', 'In1.Cu']]
+    stacks += [['F.Cu', 'In1.Cu', 'B.Cu', 'In2.Cu']]
+    stacks += [['F.Cu', 'In1.Cu', 'In2.Cu', 'B.Cu']]
+    stacks += [['F.Cu', 'B.Cu', 'In2.Cu', 'In1.Cu']]
+    
     str_data = ""
     for pole in range(poles):
         angle = angle_included*pole +angle_included/2
@@ -197,13 +214,29 @@ def pcb_motor(position, axis_radius, spiral_dct, track_dct, coil_dct):
         else:
             coil_dct['top_angle'] = (np.degrees(angle_included)*(1-pole)+360)%360
         coil_dct['center'] = coil_center
+        coil_dct['layer_stack'] = stacks[pole]
         coil_dct['connect_angle'] = (45+np.degrees(angle_included)*pole + 360)%360
         coil_dct['bottom_angle'] = (np.degrees(angle_included)*(2+pole)+360)%360
         str_data += four_layer_coil(**coil_dct, spiral_dct=spiral_dct, track_dct=track_dct)
 
     # center hole for slide bearing
-    track_dct['layer']='Edge.Cuts'
     str_data += graphic_circle(position, axis_radius, 'Edge.Cuts')
+
+    # connections between poles
+    track_dct['width'] = 0.4
+    track_dct['layer'] = 'In2.Cu'
+    str_data += arc(position, axis_radius+0.6, +np.degrees(angle_included), 
+                    180+np.degrees(angle_included), track_dct)
+    track_dct['layer'] = 'B.Cu'
+    str_data += arc(position, axis_radius+0.6, 0, 180, track_dct)
+    track_dct['layer'] = 'In1.Cu'
+    str_data += arc(position, axis_radius+0.6, -np.degrees(angle_included), 
+                    180-np.degrees(angle_included), track_dct)
+    # triple revert connection
+    track_dct['layer'] = 'F.Cu'
+    str_data += arc(position, axis_radius+0.6, -np.degrees(angle_included), 
+                    np.degrees(angle_included), track_dct)
+
     return str_data
 
 
@@ -229,7 +262,7 @@ if __name__ == '__main__':
         "bottom_angle": 360,  # degrees
         "layer_stack": ['F.Cu', 'In1.Cu', 'In2.Cu', 'B.Cu']
     }
-    position = np.array([115.0, 105.0])  # center of motor
+    position = np.array([152.0, 100.0])  # center of motor
 
 
     # open base file
