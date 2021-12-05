@@ -34,5 +34,5 @@ Note, this feature is only available if KiCad PCB is run in standalone mode.
 Script creates a 4 layer PCB motor with 6 poles. 
 The front copper layer is shown below,  
 ![toplayer](./images/toplayer.jpg)  
-The In1.Cu layer is shown below. The style of these connections is named as "Carl Bugeja" styled PCBs.  
+The In1.Cu layer is shown below. The style of these connections is named "Carl Bugeja" styled PCBs.  
 ![layer1](./images/in1layer.JPG)
