@@ -33,4 +33,4 @@ Note, this feature is only available if KiCad PCB is run in standalone mode.
 
 Script creates a 4 layer PCB motor with 6 poles. 
 The front copper layer is seen below,  
-![](./images/toplayer.png)
+![](./images/toplayer.jpg)
