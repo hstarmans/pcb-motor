@@ -192,7 +192,7 @@ def pcb_motor(position, axis_radius, spiral_dct, track_dct, coil_dct):
                                                    spiral_dct['track_distance'],
                                                    spiral_dct['start_radius'])   
     # safety margin
-    outer_radius += spiral_dct['track_distance']/2
+    outer_radius += spiral_dct['track_distance']/4
     # https://math.stackexchange.com/questions/134606/distance-between-any-two-points-on-a-unit-circle
     radius_motor = (2*outer_radius)/(2*np.sin(angle_included/2))
 
@@ -225,16 +225,17 @@ def pcb_motor(position, axis_radius, spiral_dct, track_dct, coil_dct):
     # connections between poles
     track_dct['width'] = 0.4
     track_dct['layer'] = 'In2.Cu'
-    str_data += arc(position, axis_radius+0.6, +np.degrees(angle_included), 
+    tracks_radius = radius_motor-outer_radius-0.4
+    str_data += arc(position, tracks_radius, +np.degrees(angle_included), 
                     180+np.degrees(angle_included), track_dct)
     track_dct['layer'] = 'B.Cu'
-    str_data += arc(position, axis_radius+0.6, 0, 180, track_dct)
+    str_data += arc(position, tracks_radius, 0, 180, track_dct)
     track_dct['layer'] = 'In1.Cu'
-    str_data += arc(position, axis_radius+0.6, -np.degrees(angle_included), 
+    str_data += arc(position, tracks_radius, -np.degrees(angle_included), 
                     180-np.degrees(angle_included), track_dct)
     # triple revert connection
     track_dct['layer'] = 'F.Cu'
-    str_data += arc(position, axis_radius+0.6, -np.degrees(angle_included), 
+    str_data += arc(position, tracks_radius, -np.degrees(angle_included), 
                     np.degrees(angle_included), track_dct)
 
     return str_data
@@ -278,7 +279,7 @@ if __name__ == '__main__':
         for line in start:
             f.write(line)
         
-        str_data = pcb_motor(position, 3, spiral_dct, track_dct, coil_dct)
+        str_data = pcb_motor(position, 1.05, spiral_dct, track_dct, coil_dct)
         f.write(str_data)
 
         for line in end:
