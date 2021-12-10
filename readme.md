@@ -27,7 +27,9 @@ poetry run python spiral.py
 The script modifies the base_kicad_pcb and creates a spiral.kicad_pcb.
 This can be opened with KiCad and should contain the motor.
 This design can be attached to another pcb via Kicad PCB import method.
-Note, this feature is only available if KiCad PCB is run in standalone mode.
+This feature is only available if KiCad PCB is run in standalone mode. Disable the rat's net before doing so.
+At the moment, the user still needs to add connect the coils using the via's.  
+It can also be useful to change set the net to the same number as the one you plan to use in the final layout.
 
 ## Results
 
@@ -35,4 +37,5 @@ Script creates a 4 layer PCB motor with 6 poles.
 The front copper layer is shown below,  
 ![toplayer](./images/toplayer.jpg)  
 The In1.Cu layer is shown below. The style of these connections is named "Carl Bugeja" styled PCBs.  
-![layer1](./images/in1layer.JPG)
+![layer1](./images/in1layer.JPG)  
+
