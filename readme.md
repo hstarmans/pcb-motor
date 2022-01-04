@@ -31,6 +31,16 @@ This feature is only available if KiCad PCB is run in standalone mode. Disable t
 At the moment, the user still needs to add connect the coils using the via's.  
 It can also be useful to change set the net to the same number as the one you plan to use in the final layout.
 
+## Working of the motor
+
+The magnetic field of a circular ring is shown below;
+![fieldloop](./images/fieldcircularloop.jpg).
+The idea is that there are six magnets attached under the motor.
+These magnets are in pairs of north and south. Opposing magnets have the same field.
+The coils in the motor can be; north, south or neutral.  Opposing coils give the same field.
+The motor can be in three states; (North, South, Neutral), (South, Neutral, North) and (Neutral, North, Soutch).
+This drags the rotor over the stator.
+
 ## Results
 
 Script creates a 4 layer PCB motor with 6 poles. 
@@ -38,4 +48,3 @@ The front copper layer is shown below,
 ![toplayer](./images/toplayer.jpg)  
 The In1.Cu layer is shown below. The style of these connections is named "Carl Bugeja" styled PCBs.  
 ![layer1](./images/in1layer.JPG)  
-

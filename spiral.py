@@ -103,7 +103,7 @@ def archimedian_spiral_outer_radius(turns, track_width, track_distance, start_ra
     return (turns+1)*(track_width+track_distance) + start_radius
 
 
-def four_layer_coil(center, top_angle, connect_angle, bottom_angle,
+def four_layer_coil(center, top_angle, connect_angle, bottom_angle, rotation,
                     layer_stack, spiral_dct, track_dct):
     '''draws coil in electric pcb motor
 
@@ -145,25 +145,25 @@ def four_layer_coil(center, top_angle, connect_angle, bottom_angle,
     spiral_dct['center'] = center
     # layer 0
     spiral_dct['start_angle'] = 180
-    spiral_dct['rotation'] = 1
+    spiral_dct['rotation'] = 1*rotation
     spiral_dct['final_angle'] = top_angle
     track_dct['layer'] = layer_stack[0]
     res += archimidean_spiral(**spiral_dct, track_dct=track_dct)
     # layer 1
     spiral_dct['start_angle'] = 180
-    spiral_dct['rotation'] = -1
+    spiral_dct['rotation'] = -1*rotation
     spiral_dct['final_angle'] = connect_angle
     track_dct['layer'] = layer_stack[1]
     res += archimidean_spiral(**spiral_dct, track_dct=track_dct)
     # layer 2
     spiral_dct['start_angle'] = 0
-    spiral_dct['rotation'] = 1
+    spiral_dct['rotation'] = 1*rotation
     spiral_dct['final_angle'] = (180-connect_angle+360)%360
     track_dct['layer'] = layer_stack[2]
     res += archimidean_spiral(**spiral_dct, track_dct=track_dct)
     # layer 3
     spiral_dct['start_angle'] = 0
-    spiral_dct['rotation'] = -1
+    spiral_dct['rotation'] = -1*rotation
     spiral_dct['final_angle'] = bottom_angle
     track_dct['layer'] = layer_stack[3]
     res += archimidean_spiral(**spiral_dct, track_dct=track_dct)
@@ -196,6 +196,7 @@ def pcb_motor(position, axis_radius, spiral_dct, track_dct, coil_dct):
     # https://math.stackexchange.com/questions/134606/distance-between-any-two-points-on-a-unit-circle
     radius_motor = (2*outer_radius)/(2*np.sin(angle_included/2))
 
+
     # layer stack for each pole
     stacks = [['F.Cu', 'B.Cu', 'In1.Cu', 'In2.Cu']]
     stacks += [['F.Cu', 'In2.Cu', 'In1.Cu', 'B.Cu']]
@@ -211,12 +212,15 @@ def pcb_motor(position, axis_radius, spiral_dct, track_dct, coil_dct):
         # top poles of motor should connect to phases
         if pole >= 3:
             coil_dct['top_angle'] = 0
+            coil_dct['rotation'] = 1
+            coil_dct['bottom_angle'] = (np.degrees(angle_included)*(2+pole)+360)%360
         else:
-            coil_dct['top_angle'] = (np.degrees(angle_included)*(1-pole)+360)%360
+            coil_dct['top_angle'] = (np.degrees(-angle_included)*(1-pole)+360)%360
+            coil_dct['bottom_angle'] = (np.degrees(-angle_included)*(2+pole)+360)%360
+            coil_dct['rotation'] = -1
         coil_dct['center'] = coil_center
         coil_dct['layer_stack'] = stacks[pole]
         coil_dct['connect_angle'] = (45+np.degrees(angle_included)*pole + 360)%360
-        coil_dct['bottom_angle'] = (np.degrees(angle_included)*(2+pole)+360)%360
         str_data += four_layer_coil(**coil_dct, spiral_dct=spiral_dct, track_dct=track_dct)
 
     # center hole for slide bearing
@@ -261,6 +265,7 @@ if __name__ == '__main__':
         "top_angle": 0,       # degrees
         "connect_angle": 45,  # degrees
         "bottom_angle": 360,  # degrees
+        "rotation": 1,
         "layer_stack": ['F.Cu', 'In1.Cu', 'In2.Cu', 'B.Cu']
     }
     position = np.array([152.0, 100.0])  # center of motor
