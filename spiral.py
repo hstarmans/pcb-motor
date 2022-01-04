@@ -152,13 +152,13 @@ def four_layer_coil(center, top_angle, connect_angle, bottom_angle, rotation,
     # layer 1
     spiral_dct['start_angle'] = 180
     spiral_dct['rotation'] = -1*rotation
-    spiral_dct['final_angle'] = connect_angle
+    spiral_dct['final_angle'] = (connect_angle*rotation+360)%360
     track_dct['layer'] = layer_stack[1]
     res += archimidean_spiral(**spiral_dct, track_dct=track_dct)
     # layer 2
     spiral_dct['start_angle'] = 0
     spiral_dct['rotation'] = 1*rotation
-    spiral_dct['final_angle'] = (180-connect_angle+360)%360
+    spiral_dct['final_angle'] = (180-connect_angle*rotation+360)%360
     track_dct['layer'] = layer_stack[2]
     res += archimidean_spiral(**spiral_dct, track_dct=track_dct)
     # layer 3
@@ -219,8 +219,8 @@ def pcb_motor(position, axis_radius, spiral_dct, track_dct, coil_dct):
             coil_dct['bottom_angle'] = (np.degrees(-angle_included)*(2+pole)+360)%360
             coil_dct['rotation'] = -1
         coil_dct['center'] = coil_center
-        coil_dct['layer_stack'] = stacks[pole]
         coil_dct['connect_angle'] = (45+np.degrees(angle_included)*pole + 360)%360
+        coil_dct['layer_stack'] = stacks[pole]
         str_data += four_layer_coil(**coil_dct, spiral_dct=spiral_dct, track_dct=track_dct)
 
     # center hole for slide bearing

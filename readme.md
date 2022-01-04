@@ -43,7 +43,7 @@ This drags the rotor over the stator.
 
 ## Results
 
-Script creates a 4 layer PCB motor with 6 poles. 
+Script creates a 4 layer PCB motor with 6 poles.
 The front copper layer is shown below,  
 ![toplayer](./images/toplayer.jpg)  
 The In1.Cu layer is shown below. The style of these connections is named "Carl Bugeja" styled PCBs.  
