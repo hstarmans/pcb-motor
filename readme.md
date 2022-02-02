@@ -48,3 +48,11 @@ The front copper layer is shown below,
 ![toplayer](./images/toplayer.jpg)  
 The In1.Cu layer is shown below. The style of these connections is named "Carl Bugeja" styled PCBs.  
 ![layer1](./images/in1layer.JPG)  
+
+## Video
+
+[![Video working board](http://img.youtube.com/vi/_efIdr1Gv64/0.jpg)](http://www.youtube.com/watch?v=_efIdr1Gv64 "Video working board")
+
+## Control software
+
+Gateware to pulse the motor can be found [here](https://github.com/hstarmans/hexastorm/tree/master/tests/custommotor).
