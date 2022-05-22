@@ -1,3 +1,5 @@
 spiral.kicad_pcb
 *-cache
 *-bak
+*.ipynb
+*-checkpoint.md
