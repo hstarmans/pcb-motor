@@ -36,6 +36,11 @@ It can also be useful to change set the net to the same number as the one you pl
 The magnetic field of a circular ring is shown below;
 ![fieldloop](./images/fieldcircularloop.jpg).
 The commutation and switching of motor is outlined [here](https://www.mathworks.com/help/mcb/ref/sixstepcommutation.html).  A [pancake motor](https://www.motioncontroltips.com/faq-servo-pancake-motors-work/) provides an alternative implementations of a PCB motor.  It was not used as there is no open source design available.
+
+## Ideal number of stator magnets
+The optimal number of magnets can be found from this document and goes into depth in the winding factor
+https://things-in-motion.blogspot.com/2019/01/selecting-best-pole-and-slot.html.
+The information is based off the paper 'Distribution, coil-span and winding factors for PM machines with concentrated windings' by S.E Skaar et al. and the book 'Design of Brushless Permanent-magnet Machines' by J. R. Hendershot and T. Miller. See the 'recommended reading' list above for more information on this book. The emotor.com glossary page is also useful for reference.
  
 
 ## Some facts & equations
