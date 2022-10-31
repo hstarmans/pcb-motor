@@ -7,6 +7,8 @@ Packages to generate a PCB motor, Carl Bugeja style, for KiCad using Python
 Carl Bugeja shared several projects where eletric motors are made directly using PCBs,
 see [Hackaday](https://hackaday.io/CarlBugeja) and [Youtube](https://www.youtube.com/c/CarlBugeja).
 Drawing these circuits can be a pain. This scripts automates the fabrication.
+The scripts only supports Archimidean spirals. Trapezoids are a more popular choise and most likely work better.
+An implementation/plugin for kicad can be found [here](https://github.com/atomic14/kicad-coil-plugins).
 
 ## Install
 Install poetry and python
@@ -64,7 +66,7 @@ The In1.Cu layer is shown below. The style of these connections is named "Carl B
 A voltage of 5V was applied over the board. The current reached 0.7 amps. Over time the temperature of the
 board stabilized at 60 degrees Celcius.
 
-[![Video working board](https://youtu.be/r3wv7XpXPck "Video working board")
+[![Watch the video](https://img.youtube.com/vi/r3wv7XpXPck/default.jpg)](https://youtu.be/r3wv7XpXPck)
 
 ## Control software
 
