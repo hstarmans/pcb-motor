@@ -41,7 +41,9 @@ The commutation and switching of motor is outlined [here](https://www.mathworks.
 The optimal number of magnets can be found from this document and goes into depth in the winding factor
 https://things-in-motion.blogspot.com/2019/01/selecting-best-pole-and-slot.html.
 The information is based off the paper 'Distribution, coil-span and winding factors for PM machines with concentrated windings' by S.E Skaar et al. and the book 'Design of Brushless Permanent-magnet Machines' by J. R. Hendershot and T. Miller. See the 'recommended reading' list above for more information on this book. The emotor.com glossary page is also useful for reference.
- 
+
+## Packing of circles on a circle
+https://math.stackexchange.com/questions/942775/how-many-circles-with-radius-r-1-can-be-inscribed-in-circle-with-radius-r-2
 
 ## Some facts & equations
 Standard grade neodymium magnets have a maximum operating temperature of 80 degrees [Celsius](https://www.magnetexpert.com/technical-advice-for-every-application-magnet-expert-i685/temperature-effects-on-magnets-i683).  
